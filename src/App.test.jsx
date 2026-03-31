@@ -34,6 +34,7 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: '月度还款构成（本金 + 利息）' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '剩余本金趋势' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '摊还明细（按月）' })).toBeInTheDocument()
+    expect(screen.getAllByText('单位：万元').length).toBeGreaterThanOrEqual(2)
   })
 
   it('shows only fund chart for pure fund loan', async () => {

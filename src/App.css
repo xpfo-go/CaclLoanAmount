@@ -35,7 +35,7 @@
 
 .workspace {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -204,6 +204,7 @@
 }
 
 .chart-scroller {
+  position: relative;
   overflow-x: auto;
   max-width: 100%;
   padding-bottom: 8px;
@@ -232,6 +233,12 @@
   text-anchor: end;
 }
 
+.chart-unit {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .bar-principal {
   fill: #198f7b;
 }
@@ -240,11 +247,43 @@
   fill: #e08743;
 }
 
+.bar-hit {
+  fill: #000;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: all;
+}
+
 .remaining-line {
   stroke: #1870c2;
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.line-hover-point {
+  fill: #000;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  min-width: 152px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.chart-tooltip p {
+  margin: 0;
 }
 
 .chart-legend {
@@ -343,12 +382,6 @@
   border: 1px solid #f3c4ba;
   background: #fff1ee;
   color: #8f2d1f;
-}
-
-@media (max-width: 1000px) {
-  .workspace {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 720px) {

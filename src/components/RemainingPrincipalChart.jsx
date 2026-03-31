@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const HEIGHT = 260
 const MARGIN = { top: 20, right: 20, bottom: 34, left: 56 }
 const POINT_GAP = 7
@@ -13,6 +15,8 @@ function formatAmount(value) {
 }
 
 export function RemainingPrincipalChart({ data }) {
+  const [hover, setHover] = useState(null)
+
   if (!data || data.length === 0) return null
 
   const width = MARGIN.left + MARGIN.right + Math.max(1, data.length - 1) * POINT_GAP
@@ -47,7 +51,41 @@ export function RemainingPrincipalChart({ data }) {
           )
         })}
 
+        <text x={MARGIN.left + 4} y={MARGIN.top - 6} className="chart-unit">
+          单位：万元
+        </text>
+
         <polyline points={path} fill="none" className="remaining-line" />
+
+        {data.map((item, index) => {
+          const x = MARGIN.left + index * POINT_GAP
+          const y = MARGIN.top + ((maxValue - item.remainingPrincipal) / range) * plotHeight
+          return (
+            <circle
+              key={item.month}
+              cx={x}
+              cy={y}
+              r={5}
+              className="line-hover-point"
+              data-testid={`line-point-${item.month}`}
+              onMouseEnter={() =>
+                setHover({
+                  x: x + 8,
+                  y: Math.max(y - 12, MARGIN.top + 8),
+                  item,
+                })
+              }
+              onMouseMove={() =>
+                setHover({
+                  x: x + 8,
+                  y: Math.max(y - 12, MARGIN.top + 8),
+                  item,
+                })
+              }
+              onMouseLeave={() => setHover(null)}
+            />
+          )
+        })}
 
         <line
           x1={MARGIN.left}
@@ -74,6 +112,14 @@ export function RemainingPrincipalChart({ data }) {
           )
         })}
       </svg>
+      {hover ? (
+        <div className="chart-tooltip" style={{ left: `${hover.x}px`, top: `${hover.y}px` }}>
+          <p>第 {hover.item.month} 月</p>
+          <p>本金：{formatAmount(hover.item.principal)} 万元</p>
+          <p>利息：{formatAmount(hover.item.interest)} 万元</p>
+          <p>剩余本金：{formatAmount(hover.item.remainingPrincipal)} 万元</p>
+        </div>
+      ) : null}
     </div>
   )
 }

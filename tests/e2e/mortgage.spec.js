@@ -24,6 +24,15 @@ test.describe('房贷计算器 e2e', () => {
     await expect(page.getByRole('heading', { name: '月度还款构成（本金 + 利息）' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '剩余本金趋势' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '摊还明细（按月）' })).toBeVisible()
+    await expect(page.getByText('单位：万元')).toHaveCount(2)
+
+    await page.locator('[data-testid="bar-hit-1"]').hover()
+    await expect(page.locator('.chart-tooltip')).toContainText('本金：')
+    await expect(page.locator('.chart-tooltip')).toContainText('利息：')
+    await expect(page.locator('.chart-tooltip')).toContainText('剩余本金：')
+
+    await page.locator('[data-testid="line-point-1"]').dispatchEvent('mouseenter')
+    await expect(page.locator('.chart-tooltip')).toContainText('第 1 月')
   })
 
   test('仅公积金时只显示公积金视图', async ({ page }) => {

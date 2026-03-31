@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const HEIGHT = 280
 const MARGIN = { top: 20, right: 20, bottom: 34, left: 56 }
 const BAR_WIDTH = 9
@@ -14,6 +16,8 @@ function formatAmount(value) {
 }
 
 export function PaymentCompositionChart({ data }) {
+  const [hover, setHover] = useState(null)
+
   if (!data || data.length === 0) return null
 
   const plotHeight = HEIGHT - MARGIN.top - MARGIN.bottom
@@ -43,6 +47,10 @@ export function PaymentCompositionChart({ data }) {
           )
         })}
 
+        <text x={MARGIN.left + 4} y={MARGIN.top - 6} className="chart-unit">
+          单位：万元
+        </text>
+
         {data.map((item, index) => {
           const x = MARGIN.left + index * (BAR_WIDTH + BAR_GAP)
           const principalHeight = (item.principal / maxPayment) * plotHeight
@@ -54,6 +62,29 @@ export function PaymentCompositionChart({ data }) {
             <g key={item.month}>
               <rect x={x} y={yPrincipal} width={BAR_WIDTH} height={principalHeight} className="bar-principal" />
               <rect x={x} y={yInterest} width={BAR_WIDTH} height={interestHeight} className="bar-interest" />
+              <rect
+                x={x - 1}
+                y={MARGIN.top}
+                width={BAR_WIDTH + 2}
+                height={plotHeight}
+                className="bar-hit"
+                data-testid={`bar-hit-${item.month}`}
+                onMouseEnter={() =>
+                  setHover({
+                    x: x + BAR_WIDTH + 6,
+                    y: Math.max(yInterest - 10, MARGIN.top + 8),
+                    item,
+                  })
+                }
+                onMouseMove={() =>
+                  setHover({
+                    x: x + BAR_WIDTH + 6,
+                    y: Math.max(yInterest - 10, MARGIN.top + 8),
+                    item,
+                  })
+                }
+                onMouseLeave={() => setHover(null)}
+              />
             </g>
           )
         })}
@@ -93,6 +124,14 @@ export function PaymentCompositionChart({ data }) {
           利息
         </span>
       </div>
+      {hover ? (
+        <div className="chart-tooltip" style={{ left: `${hover.x}px`, top: `${hover.y}px` }}>
+          <p>第 {hover.item.month} 月</p>
+          <p>本金：{formatAmount(hover.item.principal)} 万元</p>
+          <p>利息：{formatAmount(hover.item.interest)} 万元</p>
+          <p>剩余本金：{formatAmount(hover.item.remainingPrincipal)} 万元</p>
+        </div>
+      ) : null}
     </div>
   )
 }
