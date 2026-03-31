@@ -2,7 +2,7 @@
 
 在线体验：https://xpfo-go.github.io/CaclLoanAmount/
 
-一个适合 React 新手学习的房贷计算器前端项目，支持：
+一个房贷计算器前端项目，支持：
 - 公积金贷款
 - 商业贷款
 - 组合贷
@@ -22,7 +22,6 @@
 ├── docs/
 │   ├── requirements.md     # 需求说明
 │   └── design.md           # 设计说明
-└── legacy/go-cli/          # 旧 Go CLI 归档备份（不再主维护）
 ```
 
 ## 本地开发
@@ -43,12 +42,6 @@ npm run e2e
 npm run build
 npm run check
 ```
-
-## GitHub Actions
-
-仓库包含两条工作流：
-- `CI`：`lint + unit test + e2e + build`
-- `Deploy Pages`：构建并发布到 GitHub Pages
 
 ## 计算口径
 

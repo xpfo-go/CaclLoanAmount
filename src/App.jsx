@@ -240,7 +240,7 @@ function App() {
       </section>
 
       <footer className="footer">
-        Go CLI 版本已归档在 <code>legacy/go-cli/</code>，当前维护版本为 React 前端实现。
+        当前维护版本为 React 前端实现，所有计算均在浏览器本地完成。
       </footer>
     </main>
   )

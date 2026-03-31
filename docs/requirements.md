@@ -35,8 +35,6 @@
 - 代码清晰、模块化，适合 React 新手阅读。
 - 具备基础单元测试（核心计算逻辑）。
 - GitHub Actions 自动构建与部署到 GitHub Pages。
-- 保留旧 Go CLI 代码备份，不参与当前构建。
-
 ## 5. 迁移需求
-- 原 Go CLI 代码归档到 `legacy/go-cli/`。
+- 仓库以 React Web 版本为唯一维护入口。
 - 根目录主项目切换为 React 前端。
