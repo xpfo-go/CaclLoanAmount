@@ -86,13 +86,12 @@ function App() {
   return (
     <main className="page">
       <header className="hero">
-        <p className="eyebrow">React 学习项目</p>
         <h1>房贷计算器</h1>
         <p className="subtitle">
           浏览器本地计算，无后端依赖。支持公积金贷、商贷、组合贷与重定价。
         </p>
-        <a className="link" href="https://xpfo-go.github.io/CaclLoanAmount/" target="_blank" rel="noreferrer">
-          在线体验（GitHub Pages）
+        <a className="link" href="https://github.com/xpfo-go/CaclLoanAmount" target="_blank" rel="noreferrer">
+          GitHub 仓库
         </a>
       </header>
 
@@ -238,10 +237,6 @@ function App() {
           )}
         </section>
       </section>
-
-      <footer className="footer">
-        当前维护版本为 React 前端实现，所有计算均在浏览器本地完成。
-      </footer>
     </main>
   )
 }
