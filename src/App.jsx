@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { calculateReport, prepareScenario } from './core/calculator'
-import { LineChart } from './components/LineChart'
+import { PaymentCompositionChart } from './components/PaymentCompositionChart'
+import { RemainingPrincipalChart } from './components/RemainingPrincipalChart'
+import { AmortizationTable } from './components/AmortizationTable'
 import { MetricCard } from './components/MetricCard'
 import './App.css'
 
@@ -42,6 +44,7 @@ function App() {
   const [form, setForm] = useState(DEFAULT_FORM)
   const [report, setReport] = useState(null)
   const [errors, setErrors] = useState([])
+  const [activeView, setActiveView] = useState('combo')
 
   const estimateCommercial = useMemo(() => {
     const house = toNumber(form.houseAmount)
@@ -53,6 +56,42 @@ function App() {
   const needFundLoan = toNumber(form.fundAmount) > 0
   const needCommercialLoan = estimateCommercial > 0
 
+  const chartViews = useMemo(() => {
+    if (!report) return []
+
+    const hasFund = report.fund.schedule.length > 0
+    const hasCommercial = report.commercial.schedule.length > 0
+
+    if (hasFund && hasCommercial) {
+      return [
+        { key: 'combo', label: '合并视图', schedule: report.combo.schedule },
+        { key: 'fund', label: '公积金贷款', schedule: report.fund.schedule },
+        { key: 'commercial', label: '商业贷款', schedule: report.commercial.schedule },
+      ]
+    }
+
+    if (hasFund) {
+      return [{ key: 'fund', label: '公积金贷款', schedule: report.fund.schedule }]
+    }
+
+    if (hasCommercial) {
+      return [{ key: 'commercial', label: '商业贷款', schedule: report.commercial.schedule }]
+    }
+
+    return []
+  }, [report])
+
+  const currentViewKey = useMemo(() => {
+    if (chartViews.length === 0) return ''
+    if (chartViews.some((item) => item.key === activeView)) return activeView
+    return chartViews[0].key
+  }, [activeView, chartViews])
+
+  const currentView = useMemo(() => {
+    if (chartViews.length === 0) return null
+    return chartViews.find((item) => item.key === currentViewKey) ?? chartViews[0]
+  }, [chartViews, currentViewKey])
+
   function updateField(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
@@ -62,12 +101,14 @@ function App() {
     setForm(EXAMPLE_COMBO)
     setErrors([])
     setReport(null)
+    setActiveView('combo')
   }
 
   function clearForm() {
     setForm(DEFAULT_FORM)
     setErrors([])
     setReport(null)
+    setActiveView('combo')
   }
 
   function submit(event) {
@@ -217,23 +258,47 @@ function App() {
                 <MetricCard label="组合贷款总利息" value={formatWan(report.combo.totalInterest)} />
               </div>
 
+              {chartViews.length > 0 ? (
+                <section className="view-switch" aria-label="数据视图切换">
+                  {chartViews.map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`view-btn ${currentViewKey === item.key ? 'is-active' : ''}`}
+                      onClick={() => setActiveView(item.key)}
+                      aria-pressed={currentViewKey === item.key}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </section>
+              ) : null}
+
+              {currentView ? <p className="view-current">当前视图：{currentView.label}</p> : null}
+
               <div className="charts">
-                {report.fund.schedule.length > 0 ? (
-                  <article className="chart-card">
-                    <h3>公积金月供趋势</h3>
-                    <LineChart data={report.fund.schedule} stroke="#106f5f" />
-                  </article>
-                ) : null}
-                {report.commercial.schedule.length > 0 ? (
-                  <article className="chart-card">
-                    <h3>商业贷款月供趋势</h3>
-                    <LineChart data={report.commercial.schedule} stroke="#ce6a1d" />
-                  </article>
+                {currentView ? (
+                  <>
+                    <article className="chart-card">
+                      <h3>月度还款构成（本金 + 利息）</h3>
+                      <PaymentCompositionChart data={currentView.schedule} />
+                    </article>
+
+                    <article className="chart-card">
+                      <h3>剩余本金趋势</h3>
+                      <RemainingPrincipalChart data={currentView.schedule} />
+                    </article>
+
+                    <article className="chart-card">
+                      <h3>摊还明细（按月）</h3>
+                      <AmortizationTable data={currentView.schedule} />
+                    </article>
+                  </>
                 ) : null}
               </div>
             </>
           ) : (
-            <p className="empty">填写参数后点击“开始计算”查看结果与折线图。</p>
+            <p className="empty">填写参数后点击“开始计算”查看结果与图表。</p>
           )}
         </section>
       </section>

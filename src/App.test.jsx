@@ -29,8 +29,11 @@ describe('App', () => {
 
     expect(screen.getByText('商业贷款金额')).toBeInTheDocument()
     expect(screen.getByText('100.00 万元')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '商业贷款月供趋势' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: '公积金月供趋势' })).toBeNull()
+    expect(screen.getByRole('button', { name: '商业贷款' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '公积金贷款' })).toBeNull()
+    expect(screen.getByRole('heading', { name: '月度还款构成（本金 + 利息）' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '剩余本金趋势' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '摊还明细（按月）' })).toBeInTheDocument()
   })
 
   it('shows only fund chart for pure fund loan', async () => {
@@ -50,11 +53,12 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: '开始计算' }))
 
-    expect(screen.getByRole('heading', { name: '公积金月供趋势' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: '商业贷款月供趋势' })).toBeNull()
+    expect(screen.getByRole('button', { name: '公积金贷款' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '商业贷款' })).toBeNull()
+    expect(screen.getByRole('heading', { name: '月度还款构成（本金 + 利息）' })).toBeInTheDocument()
   })
 
-  it('shows two charts for combo loan', async () => {
+  it('shows combined/fund/commercial tabs for combo loan', async () => {
     const user = userEvent.setup()
     render(<App />)
 
@@ -75,7 +79,13 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: '开始计算' }))
 
-    expect(screen.getByRole('heading', { name: '公积金月供趋势' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '商业贷款月供趋势' })).toBeInTheDocument()
+    const comboTab = screen.getByRole('button', { name: '合并视图' })
+    expect(comboTab).toBeInTheDocument()
+    expect(comboTab).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: '公积金贷款' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '商业贷款' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: '商业贷款' }))
+    expect(screen.getByText('当前视图：商业贷款')).toBeInTheDocument()
   })
 })
