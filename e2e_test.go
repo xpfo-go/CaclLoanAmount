@@ -44,6 +44,18 @@ func TestE2E_InvalidInputFlow(t *testing.T) {
 	assertContains(t, out, "错误:")
 }
 
+func TestE2E_ZeroFundSkipsFundPrompts(t *testing.T) {
+	input := "160\n60\n0\n30\n3.6\nepi\n\n"
+	out, err := runCLI(input)
+	if err != nil {
+		t.Fatalf("expected success, got error: %v\noutput:\n%s", err, out)
+	}
+
+	assertContains(t, out, "商业贷款金额: 100.00 万元")
+	assertContains(t, out, "公积金月供: 0.00 万元")
+	assertContains(t, out, "商业贷款总利息: 63.67 万元")
+}
+
 func runCLI(input string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

@@ -29,18 +29,28 @@ func main() {
 	if err != nil {
 		exitWithError(err)
 	}
-	fundYears, err := readInt(reader, "请输入公积金贷款年份(单位:年，若公积金为0填0): ")
-	if err != nil {
-		exitWithError(err)
+
+	fundYears := 0
+	if fundAmount > 0 {
+		fundYears, err = readInt(reader, "请输入公积金贷款年份(单位:年): ")
+		if err != nil {
+			exitWithError(err)
+		}
 	}
+
 	commercialYears, err := readInt(reader, "请输入商业贷款年份(单位:年): ")
 	if err != nil {
 		exitWithError(err)
 	}
-	fundRate, err := readFloat(reader, "请输入公积金年利率(%，示例2.6): ")
-	if err != nil {
-		exitWithError(err)
+
+	fundRate := 0.0
+	if fundAmount > 0 {
+		fundRate, err = readFloat(reader, "请输入公积金年利率(%，示例2.6): ")
+		if err != nil {
+			exitWithError(err)
+		}
 	}
+
 	commercialRate, err := readFloat(reader, "请输入商业贷款初始年利率(%，示例3.6): ")
 	if err != nil {
 		exitWithError(err)
