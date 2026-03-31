@@ -1,0 +1,4 @@
+*.exe
+bin/
+worktrees/
+.worktrees/
