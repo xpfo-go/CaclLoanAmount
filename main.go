@@ -38,10 +38,7 @@ func main() {
 		}
 	}
 
-	commercialYears, err := readInt(reader, "请输入商业贷款年份(单位:年): ")
-	if err != nil {
-		exitWithError(err)
-	}
+	commercialYears := 0
 
 	fundRate := 0.0
 	if fundAmount > 0 {
@@ -51,17 +48,31 @@ func main() {
 		}
 	}
 
-	commercialRate, err := readFloat(reader, "请输入商业贷款初始年利率(%，示例3.6): ")
-	if err != nil {
-		exitWithError(err)
+	commercialRate := 0.0
+
+	commercialAmount := houseAmount - principal - fundAmount
+	if commercialAmount > 0 {
+		commercialYears, err = readInt(reader, "请输入商业贷款年份(单位:年): ")
+		if err != nil {
+			exitWithError(err)
+		}
+		commercialRate, err = readFloat(reader, "请输入商业贷款初始年利率(%，示例3.6): ")
+		if err != nil {
+			exitWithError(err)
+		}
 	}
+
 	method, err := readString(reader, "请输入还款方式(epi=等额本息, ep=等额本金): ")
 	if err != nil {
 		exitWithError(err)
 	}
-	changes, err := readString(reader, "请输入商业贷款重定价(格式: 月份:年利率%, 例如13:3.2,25:3.1；无则回车): ")
-	if err != nil {
-		exitWithError(err)
+
+	changes := ""
+	if commercialAmount > 0 {
+		changes, err = readString(reader, "请输入商业贷款重定价(格式: 月份:年利率%, 例如13:3.2,25:3.1；无则回车): ")
+		if err != nil {
+			exitWithError(err)
+		}
 	}
 
 	prepared, err := cli.BuildPrepared(cli.Scenario{
@@ -87,14 +98,17 @@ func main() {
 		}
 	}
 
-	commercialResult, err := calc.CalculateFixed(prepared.CommercialLoan)
-	if err != nil {
-		exitWithError(err)
-	}
-	if len(prepared.CommercialSegments) > 1 {
-		commercialResult, err = calc.CalculateVariable(prepared.CommercialLoan, prepared.CommercialSegments)
+	commercialResult := domain.LoanResult{}
+	if prepared.CommercialLoan.Principal > 0 {
+		commercialResult, err = calc.CalculateFixed(prepared.CommercialLoan)
 		if err != nil {
 			exitWithError(err)
+		}
+		if len(prepared.CommercialSegments) > 1 {
+			commercialResult, err = calc.CalculateVariable(prepared.CommercialLoan, prepared.CommercialSegments)
+			if err != nil {
+				exitWithError(err)
+			}
 		}
 	}
 
