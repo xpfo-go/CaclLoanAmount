@@ -37,6 +37,11 @@
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 18px;
+  align-items: start;
+}
+
+.workspace > * {
+  min-width: 0;
 }
 
 .panel {
@@ -190,6 +195,7 @@
   border-radius: 12px;
   padding: 12px;
   background: #fff;
+  min-width: 0;
 }
 
 .chart-card h3 {
@@ -199,6 +205,7 @@
 
 .chart-scroller {
   overflow-x: auto;
+  max-width: 100%;
   padding-bottom: 8px;
 }
 
@@ -287,6 +294,7 @@
 .table-scroller {
   max-height: 320px;
   overflow: auto;
+  max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
 }
